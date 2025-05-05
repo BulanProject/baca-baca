@@ -2,54 +2,91 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Web Baca-Baca</title>
+  <title>Website Baca-Baca</title>
   <style>
-    body { font-family: Arial; padding: 20px; }
-    input { margin: 5px 0; padding: 8px; width: 200px; }
-    button { padding: 8px 16px; }
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    h2 {
+      color: #333;
+    }
+    label, input {
+      display: block;
+      margin-bottom: 10px;
+    }
+    input {
+      padding: 8px;
+      width: 200px;
+    }
+    button {
+      padding: 10px 15px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 <body>
-  <h2>Welcome to website coretax (jadi-jadian)</h2>
-  <input type="text" id="username" placeholder="Nama user (misal: user1)" /><br>
-  <input type="number" id="kodeDigit" placeholder="Kode digit (misal: 0)" /><br>
+
+  <h2>Masuk ke Website Baca-Baca</h2>
+
+  <label for="username">Nama User:</label>
+  <input type="text" id="username" placeholder="misal: user1">
+
+  <label for="kodeDigit">Kode Digit:</label>
+  <input type="number" id="kodeDigit" placeholder="misal: 0">
+
   <button onclick="loginUser()">Masuk</button>
 
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyCZgdcVLwvUMascdh8Y1VdKqvK1FkHpSas",
-    authDomain: "web-baca-baca.firebaseapp.com",
-    databaseURL: "https://web-baca-baca-default-rtdb.firebaseio.com",
-    projectId: "web-baca-baca",
-    storageBucket: "web-baca-baca.appspot.com",
-    messagingSenderId: "914640731906",
-    appId: "1:914640731906:web:fa2a3f1943e31b91c78c1b"
-  };
+  <script>
+    // Firebase Config Anda
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZgdcVLwvUMascdh8Y1VdKqvK1FkHpSas",
+      authDomain: "web-baca-baca.firebaseapp.com",
+      databaseURL: "https://web-baca-baca-default-rtdb.firebaseio.com",
+      projectId: "web-baca-baca",
+      storageBucket: "web-baca-baca.appspot.com",
+      messagingSenderId: "914640731906",
+      appId: "1:914640731906:web:fa2a3f1943e31b91c78c1b"
+    };
 
-  firebase.initializeApp(firebaseConfig);
-  const database = firebase.database();
+    // Inisialisasi Firebase
+    firebase.initializeApp(firebaseConfig);
+    const firestore = firebase.firestore();
 
-  function loginUser() {
-    const username = document.getElementById("username").value;
-    const kodeDigit = document.getElementById("kodeDigit").value;
+    function loginUser() {
+      const username = document.getElementById("username").value.trim();
+      const kodeDigit = document.getElementById("kodeDigit").value.trim();
 
-    if (!username || !kodeDigit) {
-      alert("Isi semua kolom!");
-      return;
+      if (!username || !kodeDigit) {
+        alert("Harap isi semua kolom!");
+        return;
+      }
+
+      firestore.collection("users").doc(username).set({
+        kode_digit: Number(kodeDigit),
+        waktu_login: new Date()
+      })
+      .then(() => {
+        alert("Login berhasil! Data disimpan di Firestore.");
+        // Bisa dialihkan ke halaman baca berita atau tampilkan daftar berita
+      })
+      .catch((error) => {
+        console.error("Error saat menyimpan:", error);
+        alert("Gagal menyimpan ke Firestore.");
+      });
     }
-
-    database.ref("status/users/" + username).set({
-      kode_digit: Number(kodeDigit)
-    }).then(() => {
-      alert("Login berhasil dan data dikirim!");
-    }).catch((error) => {
-      alert("Gagal menyimpan: " + error.message);
-    });
-  }
-</script>
+  </script>
 
 </body>
 </html>
